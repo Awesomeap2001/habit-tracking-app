@@ -3,31 +3,45 @@ import { NAV_THEME } from '@/lib/theme';
 import { ThemeProvider } from '@react-navigation/native';
 import { PortalHost } from '@rn-primitives/portal';
 import { Stack } from 'expo-router';
-import React from 'react';
-import { Appearance } from 'react-native';
+import React, { PropsWithChildren, useMemo } from 'react';
+import { useColorScheme } from 'react-native';
 import '../global.css';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-export default function RootLayout() {
+const RootNavigator = () => {
   const { user } = useAuth();
 
-  // Set the color scheme to light by default
-  Appearance.setColorScheme('light');
-  const theme = Appearance.getColorScheme() === 'dark' ? NAV_THEME.dark : NAV_THEME.light;
+  return (
+    <Stack screenOptions={{ headerTitleAlign: 'center' }}>
+      <Stack.Protected guard={!!user}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!user}>
+        <Stack.Screen name="auth" />
+      </Stack.Protected>
+    </Stack>
+  );
+};
+
+const Providers = ({ children }: PropsWithChildren) => {
+  const colorScheme = useColorScheme();
+  const theme = useMemo(() => (colorScheme === 'dark' ? NAV_THEME.dark : NAV_THEME.light), [colorScheme]);
 
   return (
     <AuthProvider>
       <ThemeProvider value={theme}>
-        <Stack screenOptions={{ headerTitleAlign: 'center' }}>
-          <Stack.Protected guard={!!user}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          </Stack.Protected>
-
-          <Stack.Protected guard={!user}>
-            <Stack.Screen name="auth" />
-          </Stack.Protected>
-        </Stack>
+        <SafeAreaProvider>{children}</SafeAreaProvider>
         <PortalHost />
       </ThemeProvider>
     </AuthProvider>
+  );
+};
+
+export default function RootLayout() {
+  return (
+    <Providers>
+      <RootNavigator />
+    </Providers>
   );
 }

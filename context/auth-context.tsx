@@ -6,6 +6,7 @@ type AuthContextType = {
   user: Models.User<Models.Preferences> | null;
   signUp: (email: string, password: string) => Promise<string | null>;
   signIn: (email: string, password: string) => Promise<string | null>;
+  signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -15,7 +16,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signUp = async (email: string, password: string) => {
     try {
-      await account.create({ userId: ID.unique(), email: email, password: password });
+      await account.create({
+        userId: ID.unique(),
+        email: email,
+        password: password,
+      });
       console.log('user created');
       await signIn(email, password);
       return null;
@@ -28,12 +33,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signIn = async (email: string, password: string) => {
     try {
       await account.createEmailPasswordSession({ email, password });
-      console.log('user signed in');
       setUser(await account.get());
       return null;
     } catch (error) {
       if (error instanceof Error) return error.message;
       return 'An unknown error occurred';
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      await account.deleteSession({ sessionId: 'current' });
+      setUser(null);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -52,7 +65,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     getUser();
   }, []);
 
-  return <AuthContext.Provider value={{ user, signUp, signIn }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, signUp, signIn, signOut }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
