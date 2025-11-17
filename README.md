@@ -1,50 +1,193 @@
-# Welcome to your Expo app 👋
+# Habit Tracker App 🔥
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A beautiful and engaging habit tracking application built with React Native and Expo. Track your daily habits, build streaks, and stay motivated with a clean, minimalist UI.
 
-## Get started
+## ✨ Features
 
-1. Install dependencies
+### Core Functionality
+- **Habit Management**: Create, edit, and delete habits with ease
+- **Streak System**: Track your daily, weekly, and monthly streaks to stay motivated
+- **Swipe Actions**: 
+  - Swipe right to complete habits
+  - Swipe left to delete habits
+  - Visual feedback for completed habits
+- **Frequency Tracking**: Support for daily, weekly, and monthly habits
+- **Statistics Dashboard**: 
+  - View total habits and completions
+  - See your highest streak habit
+  - Discover your most completed habit
+  - Browse all habits sorted by streak
 
-   ```bash
-   npm install
-   ```
+### User Experience
+- **Clean & Minimalist UI**: Beautiful, modern interface with smooth animations
+- **Real-time Updates**: Automatic data synchronization using TanStack Query
+- **Smart Completion**: Prevents duplicate completions within the same period
+- **Visual Feedback**: Clear indicators for completed habits and streak counts
+- **Responsive Design**: Works seamlessly on iOS and Android
 
-2. Start the app
+## 🛠️ Tech Stack
 
-   ```bash
-   npx expo start
-   ```
+- **Framework**: React Native with Expo Router
+- **State Management**: TanStack Query (React Query) for server state
+- **Backend**: Appwrite for authentication and database
+- **Styling**: NativeWind (Tailwind CSS for React Native)
+- **UI Components**: Custom components built with React Native primitives
+- **Icons**: Material Community Icons
+- **Navigation**: Expo Router (file-based routing)
+- **Type Safety**: TypeScript
 
-In the output, you'll find options to open the app in a
+## 📋 Prerequisites
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Before you begin, ensure you have:
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Node.js (v18 or higher)
+- npm or yarn
+- Expo CLI (`npm install -g expo-cli`)
+- An Appwrite instance (for backend services)
 
-## Get a fresh project
+## 🚀 Getting Started
 
-When you're ready, run:
+### 1. Clone the repository
 
 ```bash
-npm run reset-project
+git clone <repository-url>
+cd Habit-tracking-app
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Install dependencies
 
-## Learn more
+```bash
+npm install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### 3. Environment Setup
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Create a `.env` file in the root directory with your Appwrite credentials:
 
-## Join the community
+```env
+EXPO_PUBLIC_APPWRITE_ENDPOINT=your_appwrite_endpoint
+EXPO_PUBLIC_APPWRITE_PROJECT_ID=your_project_id
+EXPO_PUBLIC_APPWRITE_DB_ID=your_database_id
+```
 
-Join our community of developers creating universal apps.
+### 4. Start the development server
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+npx expo start
+```
+
+### 5. Run on your device
+
+- **iOS**: Press `i` in the terminal or scan the QR code with Expo Go
+- **Android**: Press `a` in the terminal or scan the QR code with Expo Go
+- **Web**: Press `w` in the terminal
+
+## 📱 App Structure
+
+```
+app/
+├── (tabs)/
+│   ├── index.tsx          # Main habits list screen
+│   ├── add-habit.tsx      # Create new habit
+│   └── statistics.tsx    # Statistics dashboard
+├── edit-habit.tsx         # Edit existing habit
+├── auth.tsx              # Authentication screen
+└── _layout.tsx            # Root layout
+
+api/
+└── habits.ts              # Habit API functions
+
+components/
+└── ui/                    # Reusable UI components
+
+context/
+└── auth-context.tsx       # Authentication context
+```
+
+## 🎯 Key Features Explained
+
+### Streak System
+The app calculates streaks based on habit frequency:
+- **Daily**: Streak continues if completed within 24 hours
+- **Weekly**: Streak continues if completed within the week
+- **Monthly**: Streak continues if completed within the month
+
+### Swipe Actions
+- **Right Swipe**: Complete a habit (disabled if already completed today)
+- **Left Swipe**: Delete a habit with confirmation
+
+### Statistics
+- **Total Habits**: Count of all your habits
+- **Total Completions**: Sum of all habit completions
+- **Highest Streak**: Habit with the longest current streak
+- **Most Completed**: Habit with the most completion count
+- **All Habits by Streak**: Sorted list of all habits by streak length
+
+## 🔐 Authentication
+
+The app uses Appwrite for user authentication. Users can:
+- Sign up with email and password
+- Sign in to their account
+- Sign out securely
+
+## 📊 Database Schema
+
+### Habits Table
+- `user_id`: User identifier
+- `title`: Habit title
+- `description`: Habit description
+- `frequency`: daily, weekly, or monthly
+- `streak_count`: Current streak count
+- `last_completed`: Last completion timestamp
+
+### Habit Completions Table
+- `habit_id`: Reference to habit
+- `user_id`: User identifier
+- `completed_at`: Completion timestamp
+
+## 🎨 UI/UX Highlights
+
+- **Minimalist Design**: Clean interface with focus on content
+- **Color-coded Cards**: Visual distinction for different habit types
+- **Smooth Animations**: Gesture-based interactions with React Native Gesture Handler
+- **Loading States**: Clear feedback during data fetching
+- **Error Handling**: User-friendly error messages
+- **Empty States**: Helpful prompts when no data is available
+
+## 🧪 Development
+
+### Available Scripts
+
+```bash
+npm start          # Start Expo development server
+npm run android    # Run on Android
+npm run ios        # Run on iOS
+npm run web        # Run on web
+npm run lint       # Run ESLint
+```
+
+### Code Structure
+
+- **API Layer**: All backend interactions in `api/habits.ts`
+- **Components**: Reusable UI components in `components/ui/`
+- **Context**: Global state management with React Context
+- **Types**: TypeScript interfaces in `types/`
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📝 License
+
+This project is private and proprietary.
+
+## 🙏 Acknowledgments
+
+- Built with [Expo](https://expo.dev)
+- Backend powered by [Appwrite](https://appwrite.io)
+- UI components inspired by modern design systems
+- Icons from [Material Community Icons](https://github.com/Templarian/MaterialDesign)
+
+---
+
+**Built with ❤️ using React Native and Expo**
