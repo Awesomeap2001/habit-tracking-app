@@ -11,3 +11,4 @@ export const tables = new TablesDB(client);
 
 export const DATABASEID = process.env.EXPO_PUBLIC_APPWRITE_DB_ID!;
 export const habitsTableId = 'habits';
+export const habitCompletionsTableId = 'habit_completions';

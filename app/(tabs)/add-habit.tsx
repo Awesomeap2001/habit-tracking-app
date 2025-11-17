@@ -1,5 +1,5 @@
-import { View, KeyboardAvoidingView, ScrollView, Platform, ActivityIndicator } from 'react-native';
-import React, { useState } from 'react';
+import { View, ActivityIndicator, ScrollView } from 'react-native';
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -7,64 +7,62 @@ import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/auth-context';
-import { DATABASEID, habitsTableId, tables } from '@/lib/appwrite';
+import { habitsApi } from '@/api/habits';
 import { router } from 'expo-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 const FREQUENCIES = ['daily', 'weekly', 'monthly'];
 type Frequency = (typeof FREQUENCIES)[number];
 
 const AddHabit = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [habit, setHabit] = useState({
     title: '',
     description: '',
     frequency: 'daily',
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (key: string, value: string) => {
     setHabit((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSubmit = async () => {
-    if (!user) return;
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      await tables.createRow({
-        databaseId: DATABASEID,
-        tableId: habitsTableId,
-        rowId: 'unique()',
-        data: {
-          user_id: user.$id,
-          title: habit.title,
-          description: habit.description,
-          frequency: habit.frequency,
-          streak_count: 0,
-          last_completed: new Date().toISOString(),
-        },
-      });
-
+  const createHabitMutation = useMutation({
+    mutationFn: (habitData: {
+      user_id: string;
+      title: string;
+      description: string;
+      frequency: string;
+      streak_count: number;
+      last_completed: string;
+    }) => habitsApi.createHabit(habitData),
+    onSuccess: () => {
+      // Invalidate and refetch habits list and statistics
+      queryClient.invalidateQueries({ queryKey: ['habits'] });
+      queryClient.invalidateQueries({ queryKey: ['habit-statistics', user?.$id] });
       setHabit({
         title: '',
         description: '',
         frequency: 'daily',
       });
-
       router.back();
-    } catch (error) {
-      console.log(error);
-      if (error instanceof Error) setError(error.message);
-      else setError('An error occurred while creating the habit.');
-    } finally {
-      setIsLoading(false);
-    }
+    },
+  });
+
+  const handleSubmit = () => {
+    if (!user) return;
+    createHabitMutation.mutate({
+      user_id: user.$id,
+      title: habit.title,
+      description: habit.description,
+      frequency: habit.frequency,
+      streak_count: 0,
+      last_completed: '',
+    });
   };
 
   return (
-    <View className="flex-1 px-5 gap-4 py-8">
+    <ScrollView contentContainerClassName="gap-4 flex-grow justify-center px-5 py-8">
       <View className="gap-1.5">
         <Label htmlFor="title">Title</Label>
         <Input
@@ -114,14 +112,20 @@ const AddHabit = () => {
 
       <Button
         className="bg-violet-700 rounded-full mt-2 active:bg-violet-600"
-        disabled={!habit.title || !habit.description || isLoading}
+        disabled={!habit.title || !habit.description || createHabitMutation.isPending}
         onPress={handleSubmit}
       >
-        {isLoading ? <ActivityIndicator color="white" /> : <Text>Add Habit</Text>}
+        {createHabitMutation.isPending ? <ActivityIndicator color="white" /> : <Text>Add Habit</Text>}
       </Button>
 
-      {error && <Text className="text-red-500 text-center text-sm">{error}</Text>}
-    </View>
+      {createHabitMutation.isError && (
+        <Text className="text-red-500 text-center text-sm">
+          {createHabitMutation.error instanceof Error
+            ? createHabitMutation.error.message
+            : 'An error occurred while creating the habit.'}
+        </Text>
+      )}
+    </ScrollView>
   );
 };
 
