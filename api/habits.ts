@@ -63,6 +63,23 @@ export const habitsApi = {
     return data as unknown as Habit;
   },
 
+  updateHabit: async (
+    habitId: string,
+    habitData: {
+      title: string;
+      description: string;
+      frequency: string;
+    }
+  ): Promise<Habit> => {
+    const data = await tables.updateRow({
+      databaseId: DATABASEID,
+      tableId: habitsTableId,
+      rowId: habitId,
+      data: habitData,
+    });
+    return data as unknown as Habit;
+  },
+
   deleteHabit: async (habitId: string): Promise<void> => {
     // Step 1: Delete all habit completions for this habit
     const completions = await tables.listRows({

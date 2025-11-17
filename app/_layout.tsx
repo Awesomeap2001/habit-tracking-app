@@ -35,6 +35,7 @@ const RootNavigator = () => {
     <Stack screenOptions={{ headerTitleAlign: 'center' }}>
       <Stack.Protected guard={!!user}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="edit-habit" options={{ headerShown: false }} />
       </Stack.Protected>
 
       <Stack.Protected guard={!user}>

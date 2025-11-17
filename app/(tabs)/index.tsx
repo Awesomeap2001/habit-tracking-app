@@ -125,6 +125,10 @@ interface HabitCardProps {
 const HabitCard = ({ habit, onDelete, onComplete, swipeableComponentsRef }: HabitCardProps) => {
   const { $id, title, description, frequency, streak_count, isCompletedToday } = habit;
 
+  const handleEdit = () => {
+    router.push(`/edit-habit?habitId=${$id}`);
+  };
+
   const renderDeleteAction = () => (
     <View className="bg-red-100 rounded-xl justify-center items-start flex-1 p-4">
       <MaterialCommunityIcons name="delete-outline" size={32} color="red" />
@@ -181,7 +185,14 @@ const HabitCard = ({ habit, onDelete, onComplete, swipeableComponentsRef }: Habi
     >
       <Card className={cn('bg-violet-50 border-violet-700/10 py-4', isCompletedToday && 'opacity-50')}>
         <CardContent className="px-4">
-          <Text variant="h4">{title || 'No title'}</Text>
+          <View className="flex-row items-start justify-between mb-1">
+            <View className="flex-1">
+              <Text variant="h4">{title || 'No title'}</Text>
+            </View>
+            <Button variant="ghost" size="icon" onPress={handleEdit} className="ml-2">
+              <MaterialCommunityIcons name="pencil-outline" size={20} color="#6200ee" />
+            </Button>
+          </View>
           <Text variant="muted">{description || 'No description'}</Text>
 
           <View className="flex-row gap-2 justify-between items-center mt-2">

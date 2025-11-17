@@ -70,7 +70,7 @@ const AddHabit = () => {
         </Button>
         <Text className="text-violet-700 text-2xl font-bold">Add Habit</Text>
       </View>
-      <View className="gap-4 flex-1 justify-center px-5">
+      <View className="gap-4 px-5">
         <View className="gap-1.5">
           <Label htmlFor="title">Title</Label>
           <Input
