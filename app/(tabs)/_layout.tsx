@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TabsLayout() {
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 mt-6">
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: '#6200ee',
@@ -35,6 +35,7 @@ export default function TabsLayout() {
           name="add-habit"
           options={{
             title: 'Add Habit',
+            headerShown: false,
             tabBarIcon: ({ color, size }) => <MaterialCommunityIcons name="plus-circle" color={color} size={size} />,
           }}
         />

@@ -10,6 +10,7 @@ import { useAuth } from '@/context/auth-context';
 import { habitsApi } from '@/api/habits';
 import { router } from 'expo-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 const FREQUENCIES = ['daily', 'weekly', 'monthly'];
 type Frequency = (typeof FREQUENCIES)[number];
@@ -62,69 +63,77 @@ const AddHabit = () => {
   };
 
   return (
-    <ScrollView contentContainerClassName="gap-4 flex-grow justify-center px-5 py-8">
-      <View className="gap-1.5">
-        <Label htmlFor="title">Title</Label>
-        <Input
-          id="title"
-          placeholder="Title"
-          value={habit.title}
-          onChangeText={(value) => handleChange('title', value)}
-        />
+    <ScrollView contentContainerClassName="gap-4 flex-grow">
+      <View className="px-2 flex-row items-center gap-2">
+        <Button variant="ghost" size="icon" onPress={() => router.back()}>
+          <MaterialCommunityIcons name="chevron-left" size={24} color="black" />
+        </Button>
+        <Text className="text-violet-700 text-2xl font-bold">Add Habit</Text>
       </View>
+      <View className="gap-4 flex-1 justify-center px-5">
+        <View className="gap-1.5">
+          <Label htmlFor="title">Title</Label>
+          <Input
+            id="title"
+            placeholder="Title"
+            value={habit.title}
+            onChangeText={(value) => handleChange('title', value)}
+          />
+        </View>
 
-      <View className="gap-1.5">
-        <Label htmlFor="description">Description</Label>
-        <Input
-          id="description"
-          placeholder="description"
-          value={habit.description}
-          onChangeText={(value) => handleChange('description', value)}
-        />
-      </View>
+        <View className="gap-1.5">
+          <Label htmlFor="description">Description</Label>
+          <Input
+            id="description"
+            placeholder="description"
+            value={habit.description}
+            onChangeText={(value) => handleChange('description', value)}
+          />
+        </View>
 
-      <View className="mt-2">
-        <ToggleGroup
-          value={habit.frequency}
-          onValueChange={(value) => handleChange('frequency', value as Frequency)}
-          variant="outline"
-          type="single"
-          className="w-full rounded-full"
+        <View className="mt-2">
+          <ToggleGroup
+            value={habit.frequency}
+            onValueChange={(value) => handleChange('frequency', value as Frequency)}
+            variant="outline"
+            type="single"
+            className="w-full rounded-full"
+          >
+            {FREQUENCIES?.map((value, index) => (
+              <ToggleGroupItem
+                key={index}
+                value={value}
+                className={cn(
+                  'flex-1',
+                  habit.frequency === value && 'bg-violet-700',
+                  index === 0 && 'rounded-l-full',
+                  index === FREQUENCIES.length - 1 && 'rounded-r-full'
+                )}
+                {...(index === 0 && { isFirst: true })}
+                {...(index === FREQUENCIES.length - 1 && { isLast: true })}
+              >
+                <Text className={cn('capitalize', habit.frequency === value && 'text-white')}>{value}</Text>
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </View>
+
+        <Button
+          className="bg-violet-700 rounded-full mt-2 active:bg-violet-600"
+          disabled={!habit.title || !habit.description || createHabitMutation.isPending}
+          onPress={handleSubmit}
         >
-          {FREQUENCIES?.map((value, index) => (
-            <ToggleGroupItem
-              key={index}
-              value={value}
-              className={cn(
-                'flex-1',
-                habit.frequency === value && 'bg-violet-700',
-                index === 0 && 'rounded-l-full',
-                index === FREQUENCIES.length - 1 && 'rounded-r-full'
-              )}
-              {...(index === 0 && { isFirst: true })}
-              {...(index === FREQUENCIES.length - 1 && { isLast: true })}
-            >
-              <Text className={cn('capitalize', habit.frequency === value && 'text-white')}>{value}</Text>
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+          {createHabitMutation.isPending ? <ActivityIndicator color="white" /> : <Text>Add Habit</Text>}
+        </Button>
+
+        {createHabitMutation.isError && (
+          <Text className="text-red-500 text-center text-sm">
+            {createHabitMutation.error instanceof Error
+              ? createHabitMutation.error.message
+              : 'An error occurred while creating the habit.'}
+          </Text>
+        )}
       </View>
-
-      <Button
-        className="bg-violet-700 rounded-full mt-2 active:bg-violet-600"
-        disabled={!habit.title || !habit.description || createHabitMutation.isPending}
-        onPress={handleSubmit}
-      >
-        {createHabitMutation.isPending ? <ActivityIndicator color="white" /> : <Text>Add Habit</Text>}
-      </Button>
-
-      {createHabitMutation.isError && (
-        <Text className="text-red-500 text-center text-sm">
-          {createHabitMutation.error instanceof Error
-            ? createHabitMutation.error.message
-            : 'An error occurred while creating the habit.'}
-        </Text>
-      )}
     </ScrollView>
   );
 };

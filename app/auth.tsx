@@ -61,12 +61,12 @@ const Auth = () => {
         <Card className="border-border/0 sm:border-border shadow-none sm:shadow-sm sm:shadow-black/5">
           <CardHeader>
             <CardTitle className="text-center text-xl sm:text-left">
-              {isSignIn ? 'Sign in to your app' : 'Create your account'}
+              {isSignIn ? 'Sign in to Habit Tracker' : 'Create your account'}
             </CardTitle>
             <CardDescription className="text-center sm:text-left">
               {isSignIn
                 ? 'Welcome back! Please sign in to continue'
-                : 'Welcome! Please fill in the details to get started.'}
+                : 'Welcome! Please fill in the details to get started with Habit Tracker.'}
             </CardDescription>
           </CardHeader>
           <CardContent className="gap-6">
@@ -101,8 +101,8 @@ const Auth = () => {
 
               {error && <Text className="text-red-500 text-center text-sm">{error}</Text>}
 
-              <Button className="w-full" onPress={onSubmit}>
-                <Text>Continue</Text>
+              <Button className="w-full bg-violet-700  active:bg-violet-600" onPress={onSubmit}>
+                <Text>{isSignIn ? 'Sign in' : 'Sign up'}</Text>
               </Button>
             </View>
             <View className="flex-row items-center justify-center">
