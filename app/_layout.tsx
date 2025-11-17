@@ -3,13 +3,22 @@ import { NAV_THEME } from '@/lib/theme';
 import { ThemeProvider } from '@react-navigation/native';
 import { PortalHost } from '@rn-primitives/portal';
 import { Stack } from 'expo-router';
-import React, { PropsWithChildren, useMemo } from 'react';
-import { useColorScheme } from 'react-native';
-import '../global.css';
+import { PropsWithChildren, useMemo } from 'react';
+import { ActivityIndicator, useColorScheme, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import '../global.css';
 
 const RootNavigator = () => {
-  const { user } = useAuth();
+  const { isUserLoading, user } = useAuth();
+
+  // Show loading screen while checking user session
+  if (isUserLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator color="#6200ee" size="large" />
+      </View>
+    );
+  }
 
   return (
     <Stack screenOptions={{ headerTitleAlign: 'center' }}>
@@ -18,7 +27,7 @@ const RootNavigator = () => {
       </Stack.Protected>
 
       <Stack.Protected guard={!user}>
-        <Stack.Screen name="auth" />
+        <Stack.Screen name="auth" options={{ headerShown: false }} />
       </Stack.Protected>
     </Stack>
   );

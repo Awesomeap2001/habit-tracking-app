@@ -4,6 +4,7 @@ import { ID, Models } from 'react-native-appwrite';
 
 type AuthContextType = {
   user: Models.User<Models.Preferences> | null;
+  isUserLoading: boolean;
   signUp: (email: string, password: string) => Promise<string | null>;
   signIn: (email: string, password: string) => Promise<string | null>;
   signOut: () => Promise<void>;
@@ -13,6 +14,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
+  const [isUserLoading, setIsUserLoading] = useState(true);
 
   const signUp = async (email: string, password: string) => {
     try {
@@ -27,6 +29,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       if (error instanceof Error) return error.message;
       return 'An unknown error occurred';
+    } finally {
+      setIsUserLoading(false);
     }
   };
 
@@ -38,6 +42,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       if (error instanceof Error) return error.message;
       return 'An unknown error occurred';
+    } finally {
+      setIsUserLoading(false);
     }
   };
 
@@ -47,6 +53,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(null);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsUserLoading(false);
     }
   };
 
@@ -58,6 +66,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       if (error instanceof Error) return error.message;
       return 'An unknown error occurred';
+    } finally {
+      setIsUserLoading(false);
     }
   };
 
@@ -65,7 +75,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     getUser();
   }, []);
 
-  return <AuthContext.Provider value={{ user, signUp, signIn, signOut }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, isUserLoading, signUp, signIn, signOut }}>{children}</AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
